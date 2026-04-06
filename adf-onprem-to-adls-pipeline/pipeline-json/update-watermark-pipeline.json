@@ -1,0 +1,62 @@
+{
+    "name": "PL_Update_Watermark",
+    "properties": {
+        "activities": [
+            {
+                "name": "SP_UpdateWatermark",
+                "type": "SqlServerStoredProcedure",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "storedProcedureName": "[etl].[UpdateWatermark]",
+                    "storedProcedureParameters": {
+                        "SourceSchemaName": {
+                            "value": {
+                                "value": "@pipeline().parameters.SourceSchemaName",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        },
+                        "SourceTableName": {
+                            "value": {
+                                "value": "@pipeline().parameters.SourceTableName",
+                                "type": "Expression"
+                            },
+                            "type": "String"
+                        },
+                        "NewWatermarkValue": {
+                            "value": {
+                                "value": "@pipeline().parameters.NewWatermarkValue",
+                                "type": "Expression"
+                            },
+                            "type": "DateTime"
+                        }
+                    }
+                },
+                "linkedServiceName": {
+                    "referenceName": "LS_OnPrem_SQLServer",
+                    "type": "LinkedServiceReference"
+                }
+            }
+        ],
+        "parameters": {
+            "SourceSchemaName": {
+                "type": "string"
+            },
+            "SourceTableName": {
+                "type": "string"
+            },
+            "NewWatermarkValue": {
+                "type": "string"
+            }
+        },
+        "annotations": []
+    }
+}

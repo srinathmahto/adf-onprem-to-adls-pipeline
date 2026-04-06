@@ -1,0 +1,10 @@
+On-Prem SQL Server → Azure Data Factory → ADLS
+
+1. Source Data (On-Prem SQL Server): Hosts operational databases with tables requiring extraction. Contains the `etl.Metadata_Control` table configuring pipeline rules.
+2. Safe Transport layer (Self-Hosted Integration Runtime): Hosted locally on-prem to securely broker connections with cloud Azure Data Factory instances.
+3. Azure Data Factory (Orchestration):
+   - Parent Pipeline queries the metadata layout and identifies matching tables ready for ingestion.
+   - Triggers Child Pipelines individually using ForEach mechanics, streaming parameters forward.
+   - Child Pipeline verifies load types (Incremental or Full) and computes dynamic query outputs filtering based on watermarks. Upon success, invokes `PL_Update_Watermark`.
+   - Update Watermark Pipeline (`PL_Update_Watermark`): Executes a stored procedure to permanently lock in the new high watermark threshold for the processed table.
+4. Target Layer (Azure Data Lake Storage Gen2): Sinks extracted contents securely over Azure network, dropping highly compressed Parquet blobs neatly categorized in the raw tier (e.g. `raw/sales/orders/`).

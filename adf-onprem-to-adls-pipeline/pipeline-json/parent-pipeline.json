@@ -1,0 +1,103 @@
+{
+    "name": "PL_Parent_Master",
+    "properties": {
+        "activities": [
+            {
+                "name": "LKP_Get_Metadata",
+                "type": "Lookup",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "7.00:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "source": {
+                        "type": "SqlServerSource",
+                        "sqlReaderQuery": "SELECT * FROM etl.Metadata_Control WHERE IsActive = 1",
+                        "queryTimeout": "02:00:00",
+                        "partitionOption": "None"
+                    },
+                    "dataset": {
+                        "referenceName": "DS_Source_SQLServer",
+                        "type": "DatasetReference",
+                        "parameters": {
+                            "SchemaName": "etl",
+                            "TableName": "Metadata_Control"
+                        }
+                    },
+                    "firstRowOnly": false
+                }
+            },
+            {
+                "name": "ForEach_Table",
+                "type": "ForEach",
+                "dependsOn": [
+                    {
+                        "activity": "LKP_Get_Metadata",
+                        "dependencyConditions": [
+                            "Succeeded"
+                        ]
+                    }
+                ],
+                "userProperties": [],
+                "typeProperties": {
+                    "items": {
+                        "value": "@activity('LKP_Get_Metadata').output.value",
+                        "type": "Expression"
+                    },
+                    "isSequential": false,
+                    "activities": [
+                        {
+                            "name": "Execute_Child_Pipeline",
+                            "type": "ExecutePipeline",
+                            "dependsOn": [],
+                            "userProperties": [],
+                            "typeProperties": {
+                                "pipeline": {
+                                    "referenceName": "PL_Child_Worker",
+                                    "type": "PipelineReference"
+                                },
+                                "waitOnCompletion": true,
+                                "parameters": {
+                                    "SourceSchemaName": {
+                                        "value": "@item().SourceSchemaName",
+                                        "type": "Expression"
+                                    },
+                                    "SourceTableName": {
+                                        "value": "@item().SourceTableName",
+                                        "type": "Expression"
+                                    },
+                                    "TargetContainerName": {
+                                        "value": "@item().TargetContainerName",
+                                        "type": "Expression"
+                                    },
+                                    "TargetDirectoryPath": {
+                                        "value": "@item().TargetDirectoryPath",
+                                        "type": "Expression"
+                                    },
+                                    "LoadType": {
+                                        "value": "@item().LoadType",
+                                        "type": "Expression"
+                                    },
+                                    "WatermarkColumn": {
+                                        "value": "@item().WatermarkColumn",
+                                        "type": "Expression"
+                                    },
+                                    "LastWatermarkValue": {
+                                        "value": "@item().LastWatermarkValue",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ],
+        "annotations": []
+    }
+}
