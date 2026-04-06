@@ -1,0 +1,15 @@
+{
+    "name": "LS_OnPrem_SQLServer",
+    "properties": {
+        "annotations": [],
+        "type": "SqlServer",
+        "typeProperties": {
+            "connectionString": "Integrated Security=False;Data Source=OnPremSQLSvr;Initial Catalog=EnterpriseDB;User ID=etl_user;Password=*****",
+            "userName": "etl_user"
+        },
+        "connectVia": {
+            "referenceName": "IntegrationRuntime-SelfHosted",
+            "type": "IntegrationRuntimeReference"
+        }
+    }
+}

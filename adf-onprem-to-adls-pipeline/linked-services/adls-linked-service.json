@@ -1,0 +1,11 @@
+{
+    "name": "LS_ADLS_Gen2",
+    "properties": {
+        "annotations": [],
+        "type": "AzureBlobFS",
+        "typeProperties": {
+            "url": "https://datalakestorage.dfs.core.windows.net",
+            "accountKey": "********"
+        }
+    }
+}
